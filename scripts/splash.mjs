@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import JSON5 from 'json5';
 import { PATHS } from './config.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -44,7 +43,7 @@ export function buildSplash(preciseApps) {
 }
 
 function main() {
-  const precise = JSON5.parse(fs.readFileSync(p(PATHS.preciseRules), 'utf8'));
+  const precise = JSON.parse(fs.readFileSync(p(PATHS.preciseRules), 'utf8'));
   const apps = buildSplash(precise.apps);
   const splashSub = {
     id: SPLASH_SUBSCRIPTION.id,
