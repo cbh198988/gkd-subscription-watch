@@ -65,13 +65,14 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "Release $TAG 已存在，更新附件"
             gh release upload "$TAG" --clobber \
-              dist/precise.json5 dist/unique_rules.json5 dist/merged.json5 reports/$DATE.md
+              dist/precise.json5 dist/unique_rules.json5 dist/merged.json5 dist/splash.json5 reports/$DATE.md
           else
             gh release create "$TAG" \
               --title "GKD 全站周报 $DATE" \
-              --notes "本周新增不重复规则 **$NEW** 条；新纳入源 **$NEW_SRC** 个，降级源 **$DROP_SRC** 个。完整报告见 reports/$DATE.md。推荐订阅 dist/precise.json5。" \
+              --notes "本周新增不重复规则 **$NEW** 条；新纳入源 **$NEW_SRC** 个，降级源 **$DROP_SRC** 个。完整报告见 reports/$DATE.md。开屏广告精选见 dist/splash.json5。" \
               dist/precise.json5 \
               dist/unique_rules.json5 \
               dist/merged.json5 \
+              dist/splash.json5 \
               reports/$DATE.md
           fi
