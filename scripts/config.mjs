@@ -52,7 +52,7 @@ export const DISCOVERY = {
   // 社区维护的订阅收录名单（作为种子，弥补仓库名不含 gkd 的订阅）
   communityList: 'https://raw.githubusercontent.com/Adpro-Team/GKD_THS_List/main/importUrlsList.md',
   minStars: 10,          // 新源最低 stars（核心源不受此限制）
-  maxInactiveDays: 180,  // 超过此天数无推送视为停更
+  maxInactiveDays: 180,  // 超过多少天无推送视为停更
   minGroups: 5,          // 订阅文件至少包含的规则组数
   maxSources: 20,        // 每周参与合并的源数量上限（按评分排序）
   searchPages: 2,        // 每个查询抓取的页数
@@ -79,7 +79,7 @@ export const OUTPUT_SUBSCRIPTION = {
 };
 
 export const REPO = {
-  owner: 'angussleeping',
+  owner: 'cbh198988',
   name: 'gkd-subscription-watch',
 };
 
@@ -92,6 +92,8 @@ export const PATHS = {
   merged: 'dist/merged.json5',
   preciseRules: 'dist/precise.json5',
   preciseVersion: 'dist/precise.version.json5',
+  splashRules: 'dist/splash.json5',
+  splashVersion: 'dist/splash.version.json5',
   report: 'reports/latest.md',
   reportArchiveDir: 'reports',
 };
