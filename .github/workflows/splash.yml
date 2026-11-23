@@ -1,0 +1,44 @@
+name: 生成开屏广告精选订阅
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - dist/precise.json5
+      - scripts/splash.mjs
+      - scripts/config.mjs
+      - .github/workflows/splash.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装依赖
+        run: npm install --silent
+
+      - name: 从精准去重结果生成开屏精选订阅
+        run: node scripts/splash.mjs
+
+      - name: 提交开屏精选产物
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/splash.json5 dist/splash.version.json5
+          if git diff --cached --quiet; then
+            echo "开屏精选订阅无变更，跳过提交"
+          else
+            git commit -m "chore: 重新生成开屏广告精选订阅 $(date +%F)"
+            git push
+          fi
