@@ -5,6 +5,7 @@ import { OUTPUT_SUBSCRIPTION, REPO, PATHS } from './config.mjs';
 import { fetchWithFallback, parseSubscription, stats } from './lib.mjs';
 import { discoverSources } from './discover.mjs';
 import { buildPrecise } from './precise.mjs';
+import { buildSplash, SPLASH_SUBSCRIPTION } from './splash.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const p = rel => path.join(ROOT, rel);
@@ -171,6 +172,18 @@ async function main() {
   writeFile(PATHS.preciseRules, JSON.stringify(preciseSub));
   writeFile(PATHS.preciseVersion, JSON.stringify({ id: preciseSub.id, version }));
 
+  // 8.6 开屏广告精选：从精准去重结果中仅保留开屏广告规则组
+  const splashSub = {
+    id: SPLASH_SUBSCRIPTION.id,
+    name: SPLASH_SUBSCRIPTION.name,
+    version,
+    author: OUTPUT_SUBSCRIPTION.author,
+    checkUpdateUrl: SPLASH_SUBSCRIPTION.checkUpdateUrl,
+    apps: buildSplash(preciseSub.apps),
+  };
+  writeFile(PATHS.splashRules, JSON.stringify(splashSub));
+  writeFile(PATHS.splashVersion, JSON.stringify({ id: splashSub.id, version }));
+
   // 9. 生成报告
   const lines = [];
   lines.push('# GKD 全站动态订阅检测报告');
@@ -266,6 +279,8 @@ async function main() {
   lines.push(`| 全站合并全量 | ${mergedApps.size} | ${mergedSub.apps.reduce((s, a) => s + a.groups.length, 0)} | 仅按内容指纹去重 |`);
   lines.push(`| 全站去重精选 | ${uniqueApps.size} | ${uniqueSub.apps.reduce((s, a) => s + a.groups.length, 0)} | 只保留跨源唯一规则 |`);
   lines.push(`| **全站精准去重** | ${preciseResult.apps.length} | ${preciseGroups} | 语义级去重，推荐导入 |`);
+  const splashGroups = splashSub.apps.reduce((s, a) => s + a.groups.length, 0);
+  lines.push(`| 开屏广告精选 | ${splashSub.apps.length} | ${splashGroups} | 精准去重结果中仅保留开屏广告规则组 |`);
   lines.push('');
   lines.push('精准去重策略：同一广告只保留一份；小米系统应用优先奥怪版本，其余按「热度 + 活跃度 + 规则规模」评分选保留源；并合并各源独有选择器以防漏杀。');
   lines.push('');
@@ -274,6 +289,7 @@ async function main() {
   lines.push('- `dist/precise.json5`：**精准去重订阅（推荐）**，ID 990669');
   lines.push('- `dist/unique_rules.json5`：去重精选订阅，ID 990667');
   lines.push('- `dist/merged.json5`：合并全量订阅，ID 990668');
+  lines.push('- `dist/splash.json5`：开屏广告精选订阅（仅开屏广告规则组），ID 990670');
   lines.push('- `dist/*.version.json5`：更新检查文件');
   lines.push('- `data/sources.json`：动态源注册表（活跃/降级记录）');
   lines.push('');
@@ -284,6 +300,7 @@ async function main() {
   lines.push(rawUrl + PATHS.preciseRules);
   lines.push(rawUrl + PATHS.uniqueRules);
   lines.push(rawUrl + PATHS.merged);
+  lines.push(rawUrl + PATHS.splashRules);
   lines.push('```');
   lines.push('');
   writeFile(PATHS.report, lines.join('\n'));
