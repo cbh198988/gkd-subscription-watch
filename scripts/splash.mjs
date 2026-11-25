@@ -16,9 +16,14 @@ export const SPLASH_SUBSCRIPTION = {
 
 // 开屏广告识别规则：
 // - 组名含「开屏」或「启动广告」视为开屏场景；
-// - 排除：用户协议/隐私授权弹窗（非广告）、功能类自动操作、摇一摇（多为页内广告）。
+// - 排除：用户协议/隐私授权弹窗（非广告）、功能类自动操作、摇一摇（多为页内广告），
+//   以及虽带「开屏」字样但实为公告/会员引导的非广告组。
 const SPLASH_RE = /开屏|启动广告/;
-const EXCLUDE_NAMES = new Set(['开屏广告-用户协议']);
+const EXCLUDE_NAMES = new Set([
+  '开屏广告-用户协议',    // 用户协议/隐私授权弹窗，非广告
+  '全屏广告-开屏提示',    // 实为公告/网址更新提示（可可影视），非广告
+  '全屏广告-开屏vip提示', // 实为会员引导页（扫描全能王），非广告
+]);
 
 export function isSplashGroup(group) {
   const name = group?.name || '';
